@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Perceptron.iml" filepath="$PROJECT_DIR$/.idea/modules/Perceptron.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Perceptron_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Perceptron_main.iml" group="Perceptron" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Perceptron_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Perceptron_test.iml" group="Perceptron" />
+    </modules>
+  </component>
+</project>

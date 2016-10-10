@@ -1,0 +1,16 @@
+group 'com.alebit.perceptron'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile group: 'com.intellij', name: 'forms_rt', version: '7.0.3'
+    compile group: 'org.lwjgl.lwjgl', name: 'lwjgl', version: '2.9.3'
+}
