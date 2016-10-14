@@ -21,6 +21,7 @@ public class InputForm extends JFrame {
     private JSpinner iterateSpinner;
     private JPanel mainPanel;
     private JSpinner learningSpinner;
+    private JSpinner thresholdSpinner;
 
     public InputForm() {
         setTitle("Perceptron Calculator");
@@ -47,14 +48,9 @@ public class InputForm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     double[][] num = InputFileParser.parse(pathField.getText());
-                    for (int i = 0; i < num.length; i++) {
-                        for (int j = 0; j < num[0].length; j++) {
-                            System.out.print(num[i][j] + " ");
-                        }
-                        System.out.println();
-                    }
-                    double learingRate = (double) learningSpinner.getValue();
-                    System.out.println(learingRate);
+                    PerceptronAlgorithm perceptron = new PerceptronAlgorithm(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue(), (double) thresholdSpinner.getValue());
+                    perceptron.initialize();
+                    perceptron.calculate();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -64,6 +60,7 @@ public class InputForm extends JFrame {
 
     private void createUIComponents() {
         learningSpinner = new JSpinner(new SpinnerNumberModel(0, -1, 1, 0.01));
+        thresholdSpinner = new JSpinner(new SpinnerNumberModel(0, -10000, 10000, 0.01));
     }
 
 }
