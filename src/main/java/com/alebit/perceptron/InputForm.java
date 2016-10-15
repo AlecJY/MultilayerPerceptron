@@ -17,7 +17,6 @@ public class InputForm extends JFrame {
     private JSpinner iterateSpinner;
     private JPanel mainPanel;
     private JSpinner learningSpinner;
-    private JSpinner thresholdSpinner;
 
     private JFrame frame = this;
 
@@ -46,11 +45,13 @@ public class InputForm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     double[][] num = InputFileParser.parse(pathField.getText());
-                    PerceptronAlgorithm perceptron = new PerceptronAlgorithm(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue(), (double) thresholdSpinner.getValue());
+                    PerceptronAlgorithm perceptron = new PerceptronAlgorithm(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue());
                     perceptron.initialize();
-                    perceptron.calculate();
+                    double[] w = perceptron.calculate();
+                    perceptron.validate();
                     PlotPainter plotPainter = new PlotPainter(graphicPanel, frame);
                     plotPainter.setRawData(num);
+                    plotPainter.setPerceptron(perceptron);
                     plotPainter.paint();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -61,7 +62,6 @@ public class InputForm extends JFrame {
 
     private void createUIComponents() {
         learningSpinner = new JSpinner(new SpinnerNumberModel(0, -1, 1, 0.01));
-        thresholdSpinner = new JSpinner(new SpinnerNumberModel(0, -10000, 10000, 0.01));
         iterateSpinner = new JSpinner();
         graphicPanel = new JPanel();
     }

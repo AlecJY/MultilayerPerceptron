@@ -9,15 +9,16 @@ public class PerceptronAlgorithm {
     private double[][] testData;
     private double learningRate;
     private double iterateTimes;
-    private double threshold;
+    private double threshold = 1;
+    private double oTh = 1;
     private double[] classification = new double[2];
     private boolean trainSucceed = false;
+    private OneDMatrix w;
 
-    public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes, double threshold) {
+    public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes) {
         this.rawData = rawData;
         this.learningRate = learningRate;
         this.iterateTimes = iterateTimes;
-        this.threshold = threshold;
     }
 
     public void initialize() {
@@ -47,8 +48,9 @@ public class PerceptronAlgorithm {
         for (int i = 0; i < w.size(); i++) {
             w.set(i, 0);
         }
-        training(w);
-
+        w = training(w);
+        this.w = w;
+        System.out.println(trainSucceed);
         return w.toArray();
     }
 
@@ -60,6 +62,7 @@ public class PerceptronAlgorithm {
                 double e = data[data.length - 1] - out(vector, w);
                 total += Math.abs(e);
                 OneDMatrix dw = new OneDMatrix(w.size());
+                threshold = oTh * learningRate * e;
                 for (int j = 0; j < dw.size(); j++) {
                     dw.set(j, vector.get(j) * learningRate * e);
                 }
@@ -74,11 +77,25 @@ public class PerceptronAlgorithm {
     }
 
     private double out(OneDMatrix vector, OneDMatrix w) {
-        double result = vector.multiply(w) - threshold;
-        if (result >= 0) {
+        double result = vector.multiply(w) - threshold * oTh;
+         if (result >= 0) {
             return classification[1];
         } else {
             return classification[0];
+        }
+    }
+
+    public double getY(double x) {
+        double[] wArray = w.toArray();
+        return (threshold * oTh -x*wArray[0])/wArray[1];
+    }
+
+    public void validate() {
+        for (double[] data: rawData) {
+            OneDMatrix vector = new OneDMatrix(data);
+            if (out(vector, w) != data[data.length-1]) {
+                // throw new NumberFormatException();
+            }
         }
     }
 }
