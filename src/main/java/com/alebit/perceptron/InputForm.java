@@ -1,9 +1,5 @@
 package com.alebit.perceptron;
 
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,6 +18,8 @@ public class InputForm extends JFrame {
     private JPanel mainPanel;
     private JSpinner learningSpinner;
     private JSpinner thresholdSpinner;
+
+    private JFrame frame = this;
 
     public InputForm() {
         setTitle("Perceptron Calculator");
@@ -51,6 +49,9 @@ public class InputForm extends JFrame {
                     PerceptronAlgorithm perceptron = new PerceptronAlgorithm(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue(), (double) thresholdSpinner.getValue());
                     perceptron.initialize();
                     perceptron.calculate();
+                    PlotPainter plotPainter = new PlotPainter(graphicPanel, frame);
+                    plotPainter.setRawData(num);
+                    plotPainter.paint();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -61,6 +62,8 @@ public class InputForm extends JFrame {
     private void createUIComponents() {
         learningSpinner = new JSpinner(new SpinnerNumberModel(0, -1, 1, 0.01));
         thresholdSpinner = new JSpinner(new SpinnerNumberModel(0, -10000, 10000, 0.01));
+        iterateSpinner = new JSpinner();
+        graphicPanel = new JPanel();
     }
 
 }
