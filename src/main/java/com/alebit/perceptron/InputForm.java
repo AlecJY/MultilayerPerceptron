@@ -17,6 +17,8 @@ public class InputForm extends JFrame {
     private JSpinner iterateSpinner;
     private JPanel mainPanel;
     private JSpinner learningSpinner;
+    private JCheckBox testCheckBox;
+    private JCheckBox detailsCheckBox;
 
     private JFrame frame = this;
 
@@ -45,11 +47,11 @@ public class InputForm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     double[][] num = InputFileParser.parse(pathField.getText());
-                    PerceptronAlgorithm perceptron = new PerceptronAlgorithm(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue(), "Perceptron 1");
+                    PerceptronAlgorithm perceptron = new PerceptronAlgorithm(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue(), "Perceptron 1", testCheckBox.isSelected(), !detailsCheckBox.isSelected());
                     perceptron.initialize();
                     double[] w = perceptron.calculate();
                     ResultForm resultForm = new ResultForm(frame);
-                    resultForm.setFieldValue(perceptron.getThreshold(), w, perceptron.validate(), 0);
+                    resultForm.setFieldValue(perceptron.getThreshold(), w, perceptron.validate(), perceptron.testValidate());
                     resultForm.getLogArea().setText(perceptron.getLog());
                     resultPanel.removeAll();
                     resultPanel.setLayout(new GridLayout());
@@ -59,6 +61,9 @@ public class InputForm extends JFrame {
                     plotPainter.setPerceptron(perceptron);
                     if (!plotPainter.paint()) {
                         resultForm.getTabbedPane().setEnabledAt(2, false);
+                    }
+                    if (detailsCheckBox.isSelected()) {
+                        resultForm.getTabbedPane().setEnabledAt(1, false);
                     }
                     frame.pack();
                     frame.revalidate();

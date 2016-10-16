@@ -15,29 +15,33 @@ public class PerceptronAlgorithm {
     private double oTh = 1;
     private double[] classification = new double[2];
     private boolean trainSucceed = false;
+    private boolean test;
     private OneDMatrix w;
     private String name;
     private StringBuffer log = new StringBuffer();
-    private static final int GREEN = 1;
-    private static final int RED = 0;
     private boolean enableLog = true;
-    private boolean enableHighlight = false;
 
-    public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes, String name) {
+    public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes, String name, boolean test, boolean enableLog) {
         this.rawData = rawData;
         this.learningRate = learningRate;
         this.iterateTimes = iterateTimes;
         this.name = name;
+        this.enableLog = enableLog;
+        this.test = test;
     }
 
     public void initialize() {
-        /* int num = rawData.length;
-        int learningNum = (int) Math.ceil(num * 2 / 3);
-        int testNum = num - learningNum;
-        learningData = new double[learningNum][];
-        testData = new double[testNum][];
-        System.arraycopy(rawData, 0, learningData, 0, learningNum);
-        System.arraycopy(rawData, learningNum, testData, 0, testNum); */
+        if (test) {
+            int num = rawData.length;
+            int learningNum = (int) Math.ceil((double) num * 2 / 3);
+            int testNum = num - learningNum;
+            learningData = new double[learningNum][];
+            testData = new double[testNum][];
+            System.arraycopy(rawData, 0, learningData, 0, learningNum);
+            System.arraycopy(rawData, learningNum, testData, 0, testNum);
+            rawData = learningData;
+        }
+
         classification[0] = rawData[0][rawData[0].length-1];
         for (int i = 0; i < rawData.length; i++) {
             if (rawData[i][rawData[0].length-1] != classification[0]) {
@@ -59,10 +63,13 @@ public class PerceptronAlgorithm {
     public double[] calculate() {
         OneDMatrix w = new OneDMatrix(rawData[0].length - 1);
         for (int i = 0; i < w.size(); i++) {
-            w.set(i, 0);
+            w.set(i, 1);
         }
         w = training(w);
         this.w = w;
+        if (enableLog) {
+            log("===== Training Finished =====");
+        }
         return w.toArray();
     }
 
@@ -79,7 +86,7 @@ public class PerceptronAlgorithm {
                 // log
                 if (enableLog) {
                     StringBuffer msg = new StringBuffer();
-                    msg.append("Dot: (" + String.format("%.3f", data[0]));
+                    msg.append("dot: (" + String.format("%.3f", data[0]));
                     for (int j = 1; j < data.length - 1; j++) {
                         msg.append(", " + String.format("%.3f", data[j]));
                     }
@@ -146,8 +153,40 @@ public class PerceptronAlgorithm {
         return (rawData.length - count) / rawData.length;
     }
 
+    public double testValidate() {
+        if (!test) {
+            return -1;
+        }
+        if (enableLog) {
+            log("===== " + name + " Start Testing=====");
+        }
+        double count = 0;
+        for (double[] data: testData) {
+            OneDMatrix vector = new OneDMatrix(data);
+            if (enableLog) {
+                StringBuffer msg = new StringBuffer();
+                msg.append("dot: (" + String.format("%.3f", data[0]));
+                for (int j = 1; j < data.length - 1; j++) {
+                    msg.append(", " + String.format("%.3f", data[j]));
+                }
+                msg.append("), predict: " + (long) data[data.length - 1] + ", actual: " + (long) out(vector, w));
+                if (out(vector, w) == data[data.length-1]) {
+                    msg.append(", status: true");
+                } else {
+                    msg.append(", status: false");
+                }
+                log(msg.toString());
+            }
+            if (out(vector, w) != data[data.length-1]) {
+                count++;
+            }
+        }
+        log("===== Testing Finished =====");
+        return (testData.length - count) / testData.length;
+    }
+
     private void log(String msg) {
-        log.append("< " + name +" > " + msg + "\n");
+        log.append("<" + name +"> " + msg + "\n");
     }
 
 

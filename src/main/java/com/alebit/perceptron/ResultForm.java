@@ -19,6 +19,7 @@ public class ResultForm {
     private JTextField tRatefield;
     private JTextField testRateField;
     private JTextArea logArea;
+    private JLabel testLabel;
     private JFrame frame;
 
     public ResultForm(JFrame frame) {
@@ -62,7 +63,12 @@ public class ResultForm {
         weightsStr = weightsStr.concat(")");
         weightsField.setText(weightsStr);
         tRatefield.setText(String.format("%.2f", tRate * 100) + " %");
-        testRateField.setText(String.format("%.2f", testRate * 100) + " %");
+        if (testRate == -1) {
+            testRateField.setVisible(false);
+            testLabel.setVisible(false);
+        } else {
+            testRateField.setText(String.format("%.2f", testRate * 100) + " %");
+        }
     }
 
     private void createUIComponents() {
