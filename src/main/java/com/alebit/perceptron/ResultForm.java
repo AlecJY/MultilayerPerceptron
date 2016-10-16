@@ -18,11 +18,12 @@ public class ResultForm {
     private JTextField weightsField;
     private JTextField tRatefield;
     private JTextField testRateField;
-    private JTextArea logArea;
+    private JTextPane logPane;
     private JFrame frame;
 
     public ResultForm(JFrame frame) {
         this.frame = frame;
+        logPane.setText("");
         detailsPanel.setPreferredSize(new Dimension(-1, -1));
         tabbedPane.addChangeListener(new ChangeListener() {
             @Override
@@ -50,8 +51,8 @@ public class ResultForm {
         return tabbedPane;
     }
 
-    public JTextArea getLogArea() {
-        return logArea;
+    public JTextPane getLogPane() {
+        return logPane;
     }
 
     public void setFieldValue(double threshold, double[] w, double tRate, double testRate) {
@@ -63,9 +64,5 @@ public class ResultForm {
         weightsField.setText(weightsStr);
         tRatefield.setText(String.format("%.2f", tRate * 100) + " %");
         testRateField.setText(String.format("%.2f", testRate * 100) + " %");
-    }
-
-    private void createUIComponents() {
-        logArea = new JTextArea();
     }
 }

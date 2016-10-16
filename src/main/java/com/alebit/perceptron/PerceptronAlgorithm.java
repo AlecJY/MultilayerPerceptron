@@ -2,6 +2,11 @@ package com.alebit.perceptron;
 
 import com.sun.org.apache.regexp.internal.RE;
 
+import javax.swing.*;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import java.awt.*;
+
 /**
  * Created by Alec on 2016/10/14.
  */
@@ -22,12 +27,24 @@ public class PerceptronAlgorithm {
     private static final int RED = 0;
     private boolean enableLog = true;
     private boolean enableHighlight = false;
+    private JTextPane logPane;
 
     public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes, String name) {
         this.rawData = rawData;
         this.learningRate = learningRate;
         this.iterateTimes = iterateTimes;
         this.name = name;
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        logPane = new JTextPane();
+        JScrollPane scrollPane = new JScrollPane(logPane);
+        frame.setLayout(new GridLayout());
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        logPane.setText("");
+        frame.setPreferredSize(new Dimension(200, 500));
+        frame.add(scrollPane);
+        frame.pack();
+        frame.setVisible(true);
     }
 
     public void initialize() {
@@ -146,19 +163,31 @@ public class PerceptronAlgorithm {
     }
 
     private void log(String msg) {
-        log.append("&lt; " + name +" &gt; " + msg + "<br/>");
+        try {
+            logPane.getStyledDocument().insertString(logPane.getStyledDocument().getLength(), msg + "\n", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // log.append("&lt; " + name +" &gt; " + msg + "<br/>");
     }
-    private void log(String msg, int color) {
-        String colorStr;
-        if (color == RED) {
-            colorStr = "red";
-        } else if (color == GREEN) {
-            colorStr = "green";
+    private void log(String msg, int colorID) {
+        Color color;
+        if (colorID == RED) {
+            color = Color.RED;
+        } else if (colorID == GREEN) {
+            color = Color.RED;
         }else {
             log(msg);
             return;
         }
-        log.append("&lt; " + name +" &gt; "  + "<font color=\"" + colorStr + "\">" + msg + "</font>" + "<br/>");
+        // log.append("&lt; " + name +" &gt; "  + "<font color=\"" + colorStr + "\">" + msg + "</font>" + "<br/>");
+        try {
+            SimpleAttributeSet textAttr = new SimpleAttributeSet();
+            StyleConstants.setForeground(textAttr, color);
+            logPane.getStyledDocument().insertString(logPane.getStyledDocument().getLength(), msg + "\n", textAttr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String getLog() {

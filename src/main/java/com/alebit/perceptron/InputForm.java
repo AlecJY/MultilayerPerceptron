@@ -45,12 +45,12 @@ public class InputForm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     double[][] num = InputFileParser.parse(pathField.getText());
+                    ResultForm resultForm = new ResultForm(frame);
                     PerceptronAlgorithm perceptron = new PerceptronAlgorithm(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue(), "Perceptron 1");
                     perceptron.initialize();
                     double[] w = perceptron.calculate();
-                    ResultForm resultForm = new ResultForm(frame);
                     resultForm.setFieldValue(perceptron.getThreshold(), w, perceptron.validate(), 0);
-                    resultForm.getLogArea().setText("<html>" + perceptron.getLog() + "</html>");
+                    // resultForm.getLogArea().setText("<html>" + perceptron.getLog() + "</html>");
                     resultPanel.removeAll();
                     resultPanel.setLayout(new GridLayout());
                     resultPanel.add(resultForm.getMainPanel());
