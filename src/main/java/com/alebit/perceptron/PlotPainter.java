@@ -44,7 +44,7 @@ public class PlotPainter {
         this.perceptron = perceptron;
     }
 
-    public void paint() {
+    public boolean paint() {
         graphPanel.removeAll();
         if (dimension == 2) {
             Plot2D plot2D = new Plot2D(graphPanel, frame);
@@ -53,6 +53,9 @@ public class PlotPainter {
         } else if (dimension == 3) {
             Plot3D plot3D = new Plot3D(graphPanel, frame);
             plot3D.drawPlot(dotData);
+        } else {
+            return false;
         }
+        return true;
     }
 }

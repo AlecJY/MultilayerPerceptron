@@ -99,12 +99,18 @@ public class PerceptronAlgorithm {
         return (-1 * threshold * oTh -x*wArray[0])/wArray[1];
     }
 
-    public void validate() {
+    public double getThreshold() {
+        return threshold;
+    }
+
+    public double validate() {
+        double count = 0;
         for (double[] data: rawData) {
             OneDMatrix vector = new OneDMatrix(data);
             if (out(vector, w) != data[data.length-1]) {
-                // throw new NumberFormatException();
+                count++;
             }
         }
+        return (rawData.length - count) / rawData.length;
     }
 }

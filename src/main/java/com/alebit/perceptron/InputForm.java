@@ -11,7 +11,7 @@ import java.io.File;
  */
 public class InputForm extends JFrame {
     private JButton calculateButton;
-    private JPanel graphicPanel;
+    private JPanel resultPanel;
     private JTextField pathField;
     private JButton openButton;
     private JSpinner iterateSpinner;
@@ -48,11 +48,19 @@ public class InputForm extends JFrame {
                     PerceptronAlgorithm perceptron = new PerceptronAlgorithm(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue());
                     perceptron.initialize();
                     double[] w = perceptron.calculate();
-                    perceptron.validate();
-                    PlotPainter plotPainter = new PlotPainter(graphicPanel, frame);
+                    ResultForm resultForm = new ResultForm(frame);
+                    resultForm.setFieldValue(perceptron.getThreshold(), w, perceptron.validate(), 0);
+                    resultPanel.removeAll();
+                    resultPanel.setLayout(new GridLayout());
+                    resultPanel.add(resultForm.getMainPanel());
+                    PlotPainter plotPainter = new PlotPainter(resultForm.getGraphPanel(), frame);
                     plotPainter.setRawData(num);
                     plotPainter.setPerceptron(perceptron);
-                    plotPainter.paint();
+                    if (!plotPainter.paint()) {
+                        resultForm.getTabbedPane().setEnabledAt(2, false);
+                    }
+                    frame.pack();
+                    frame.revalidate();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -63,7 +71,7 @@ public class InputForm extends JFrame {
     private void createUIComponents() {
         learningSpinner = new JSpinner(new SpinnerNumberModel(0, -1, 1, 0.01));
         iterateSpinner = new JSpinner();
-        graphicPanel = new JPanel();
+        resultPanel = new JPanel();
     }
 
 }

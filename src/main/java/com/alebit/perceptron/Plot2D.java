@@ -31,7 +31,6 @@ public class Plot2D {
 
         graphPanel.setLayout(new GridLayout());
         graphPanel.add(plot2DCanvas);
-        graphPanel.setPreferredSize(new Dimension(frame.getWidth() - 80, 500));
         frame.pack();
         frame.revalidate();
     }
