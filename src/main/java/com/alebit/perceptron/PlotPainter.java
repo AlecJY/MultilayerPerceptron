@@ -13,6 +13,7 @@ public class PlotPainter {
     private HashMap<Double, ArrayList<double[]>> dotData = new HashMap();
     private int dimension;
     private PerceptronAlgorithm perceptron;
+    private double[][] rawData;
 
     public PlotPainter(JPanel graphPanel, JFrame frame) {
         this.graphPanel = graphPanel;
@@ -20,6 +21,7 @@ public class PlotPainter {
     }
 
     public void setRawData(double[][] data) {
+        rawData = data;
         dimension = data[0].length-1;
         for (int i = 0; i < data.length; i++) {
             double dataType = data[i][dimension];
@@ -46,7 +48,8 @@ public class PlotPainter {
         graphPanel.removeAll();
         if (dimension == 2) {
             Plot2D plot2D = new Plot2D(graphPanel, frame);
-            plot2D.drawPlot(dotData, perceptron);
+            plot2D.addLine(perceptron, rawData);
+            plot2D.drawPlot(dotData);
         } else if (dimension == 3) {
             Plot3D plot3D = new Plot3D(graphPanel, frame);
             plot3D.drawPlot(dotData);

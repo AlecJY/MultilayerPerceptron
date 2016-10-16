@@ -50,6 +50,7 @@ public class PerceptronAlgorithm {
         }
         w = training(w);
         this.w = w;
+        System.out.println(threshold + " " + w.toArray()[0] + " " + w.toArray()[1]);
         System.out.println(trainSucceed);
         return w.toArray();
     }
@@ -60,13 +61,16 @@ public class PerceptronAlgorithm {
             for (double[] data : rawData) {
                 OneDMatrix vector = new OneDMatrix(data);
                 double e = data[data.length - 1] - out(vector, w);
+                System.out.println("e: " + e);
                 total += Math.abs(e);
                 OneDMatrix dw = new OneDMatrix(w.size());
-                threshold = oTh * learningRate * e;
+                threshold += oTh * learningRate * e;
+                System.out.println(threshold);
                 for (int j = 0; j < dw.size(); j++) {
                     dw.set(j, vector.get(j) * learningRate * e);
                 }
                 w = w.add(dw);
+                System.out.println(w.toArray()[0] + " " + w.toArray()[1]);
             }
             if (total == 0) {
                 trainSucceed = true;
@@ -77,7 +81,7 @@ public class PerceptronAlgorithm {
     }
 
     private double out(OneDMatrix vector, OneDMatrix w) {
-        double result = vector.multiply(w) - threshold * oTh;
+        double result = vector.multiply(w) + threshold * oTh;
          if (result >= 0) {
             return classification[1];
         } else {
@@ -85,9 +89,14 @@ public class PerceptronAlgorithm {
         }
     }
 
+    public double getX(double y) {
+        double[] wArray = w.toArray();
+        return (-1 * threshold * oTh - y*wArray[1])/wArray[0];
+    }
+
     public double getY(double x) {
         double[] wArray = w.toArray();
-        return (threshold * oTh -x*wArray[0])/wArray[1];
+        return (-1 * threshold * oTh -x*wArray[0])/wArray[1];
     }
 
     public void validate() {

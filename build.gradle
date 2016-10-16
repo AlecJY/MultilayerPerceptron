@@ -17,3 +17,7 @@ dependencies {
     compile group: 'com.intellij', name: 'forms_rt', version: '7.0.3'
     compile group: 'com.github.yannrichet', name: 'JMathPlot', version: '1.0.1'
 }
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
