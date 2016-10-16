@@ -1,5 +1,7 @@
 package com.alebit.perceptron;
 
+import com.sun.org.apache.regexp.internal.RE;
+
 /**
  * Created by Alec on 2016/10/14.
  */
@@ -14,11 +16,18 @@ public class PerceptronAlgorithm {
     private double[] classification = new double[2];
     private boolean trainSucceed = false;
     private OneDMatrix w;
+    private String name;
+    private StringBuffer log = new StringBuffer();
+    private static final int GREEN = 1;
+    private static final int RED = 0;
+    private boolean enableLog = true;
+    private boolean enableHighlight = false;
 
-    public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes) {
+    public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes, String name) {
         this.rawData = rawData;
         this.learningRate = learningRate;
         this.iterateTimes = iterateTimes;
+        this.name = name;
     }
 
     public void initialize() {
@@ -41,6 +50,10 @@ public class PerceptronAlgorithm {
             classification[0] = classification[1];
             classification[1] = tmp;
         }
+        if (enableLog) {
+            log("====== " + name + " Start Calculate =====");
+            log("Classification 1: " + (int) classification[0] + "\t Classification 2: " + (int) classification[1]);
+        }
     }
 
     public double[] calculate() {
@@ -50,27 +63,45 @@ public class PerceptronAlgorithm {
         }
         w = training(w);
         this.w = w;
-        System.out.println(threshold + " " + w.toArray()[0] + " " + w.toArray()[1]);
-        System.out.println(trainSucceed);
         return w.toArray();
     }
 
     private OneDMatrix training(OneDMatrix w) {
         for (int i = 0; i < iterateTimes; i++) {
+            if (enableLog) {
+                log("===== " + (i + 1) + "th Training =====");
+            }
             double total = 0;
             for (double[] data : rawData) {
                 OneDMatrix vector = new OneDMatrix(data);
                 double e = data[data.length - 1] - out(vector, w);
-                System.out.println("e: " + e);
+
+                // log
+                if (enableLog) {
+                    StringBuffer msg = new StringBuffer();
+                    msg.append("Dot: (" + String.format("%.3f", data[0]));
+                    for (int j = 1; j < data.length - 1; j++) {
+                        msg.append(", " + String.format("%.3f", data[j]));
+                    }
+                    msg.append("), w: (" + String.format("%.3f", threshold));
+                    for (int j = 0; j < w.size(); j++) {
+                        msg.append( ", " + String.format("%.3f", w.toArray()[j]));
+                    }
+                    msg.append("), predict: " + (long) data[data.length - 1] + ", actual: " + (long) out(vector, w));
+                    if (e == 0) {
+                        log(msg.toString(), GREEN);
+                    } else {
+                        log(msg.toString(), RED);
+                    }
+                }
+
                 total += Math.abs(e);
                 OneDMatrix dw = new OneDMatrix(w.size());
                 threshold += oTh * learningRate * e;
-                System.out.println(threshold);
                 for (int j = 0; j < dw.size(); j++) {
                     dw.set(j, vector.get(j) * learningRate * e);
                 }
                 w = w.add(dw);
-                System.out.println(w.toArray()[0] + " " + w.toArray()[1]);
             }
             if (total == 0) {
                 trainSucceed = true;
@@ -112,5 +143,26 @@ public class PerceptronAlgorithm {
             }
         }
         return (rawData.length - count) / rawData.length;
+    }
+
+    private void log(String msg) {
+        log.append("&lt; " + name +" &gt; " + msg + "<br/>");
+    }
+    private void log(String msg, int color) {
+        String colorStr;
+        if (color == RED) {
+            colorStr = "red";
+        } else if (color == GREEN) {
+            colorStr = "green";
+        }else {
+            log(msg);
+            return;
+        }
+        log.append("&lt; " + name +" &gt; "  + "<font color=\"" + colorStr + "\">" + msg + "</font>" + "<br/>");
+    }
+
+    public String getLog() {
+        System.out.println("Logged");
+        return log.toString();
     }
 }
