@@ -89,10 +89,11 @@ public class PerceptronAlgorithm {
                     }
                     msg.append("), predict: " + (long) data[data.length - 1] + ", actual: " + (long) out(vector, w));
                     if (e == 0) {
-                        log(msg.toString(), GREEN);
+                        msg.append(", status: true");
                     } else {
-                        log(msg.toString(), RED);
+                        msg.append(", status: false");
                     }
+                    log(msg.toString());
                 }
 
                 total += Math.abs(e);
@@ -146,23 +147,11 @@ public class PerceptronAlgorithm {
     }
 
     private void log(String msg) {
-        log.append("&lt; " + name +" &gt; " + msg + "<br/>");
-    }
-    private void log(String msg, int color) {
-        String colorStr;
-        if (color == RED) {
-            colorStr = "red";
-        } else if (color == GREEN) {
-            colorStr = "green";
-        }else {
-            log(msg);
-            return;
-        }
-        log.append("&lt; " + name +" &gt; "  + "<font color=\"" + colorStr + "\">" + msg + "</font>" + "<br/>");
+        log.append("< " + name +" > " + msg + "\n");
     }
 
+
     public String getLog() {
-        System.out.println("Logged");
         return log.toString();
     }
 }

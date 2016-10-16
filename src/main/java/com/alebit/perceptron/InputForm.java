@@ -50,7 +50,7 @@ public class InputForm extends JFrame {
                     double[] w = perceptron.calculate();
                     ResultForm resultForm = new ResultForm(frame);
                     resultForm.setFieldValue(perceptron.getThreshold(), w, perceptron.validate(), 0);
-                    resultForm.getLogArea().setText("<html>" + perceptron.getLog() + "</html>");
+                    resultForm.getLogArea().setText(perceptron.getLog());
                     resultPanel.removeAll();
                     resultPanel.setLayout(new GridLayout());
                     resultPanel.add(resultForm.getMainPanel());
