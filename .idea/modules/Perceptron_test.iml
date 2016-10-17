@@ -12,6 +12,7 @@
     <orderEntry type="module" module-name="Perceptron_main" />
     <orderEntry type="library" name="Gradle: com.intellij:forms_rt:7.0.3" level="project" />
     <orderEntry type="library" name="Gradle: com.github.yannrichet:JMathPlot:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.seaglasslookandfeel:seaglasslookandfeel:0.2.1" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.11" level="project" />
     <orderEntry type="library" name="Gradle: asm:asm-commons:3.0" level="project" />
     <orderEntry type="library" name="Gradle: com.jgoodies:forms:1.1-preview" level="project" />
