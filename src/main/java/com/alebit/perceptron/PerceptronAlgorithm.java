@@ -2,6 +2,8 @@ package com.alebit.perceptron;
 
 import com.sun.org.apache.regexp.internal.RE;
 
+import java.util.Random;
+
 /**
  * Created by Alec on 2016/10/14.
  */
@@ -20,14 +22,16 @@ public class PerceptronAlgorithm {
     private String name;
     private StringBuffer log = new StringBuffer();
     private boolean enableLog = true;
+    private long seed;
 
-    public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes, String name, boolean test, boolean enableLog) {
+    public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes, String name, boolean test, boolean enableLog, long seed) {
         this.rawData = rawData;
         this.learningRate = learningRate;
         this.iterateTimes = iterateTimes;
         this.name = name;
         this.enableLog = enableLog;
         this.test = test;
+        this.seed = seed;
     }
 
     public void initialize() {
@@ -37,8 +41,26 @@ public class PerceptronAlgorithm {
             int testNum = num - learningNum;
             learningData = new double[learningNum][];
             testData = new double[testNum][];
-            System.arraycopy(rawData, 0, learningData, 0, learningNum);
-            System.arraycopy(rawData, learningNum, testData, 0, testNum);
+            Random random = new Random(seed);
+            for (double[] data: rawData) {
+                if (random.nextInt(3) < 2) {
+                    if (learningNum != 0) {
+                        learningData[learningNum-1] = data;
+                        learningNum--;
+                    } else {
+                        testData[testNum-1] = data;
+                        testNum--;
+                    }
+                } else {
+                    if (testNum != 0) {
+                        testData[testNum-1] = data;
+                        testNum--;
+                    } else {
+                        learningData[learningNum-1] = data;
+                        learningNum--;
+                    }
+                }
+            }
             rawData = learningData;
         }
 
@@ -55,7 +77,7 @@ public class PerceptronAlgorithm {
             classification[1] = tmp;
         }
         if (enableLog) {
-            log("====== " + name + " Start Calculate =====");
+            log("====== " + name + " Start Training =====");
             log("Classification 1: " + (int) classification[0] + "\t Classification 2: " + (int) classification[1]);
         }
     }
@@ -68,7 +90,7 @@ public class PerceptronAlgorithm {
         w = training(w);
         this.w = w;
         if (enableLog) {
-            log("===== Training Finished =====");
+            log("====== " + name + " End Training =====");
         }
         return w.toArray();
     }
@@ -153,6 +175,34 @@ public class PerceptronAlgorithm {
         return (rawData.length - count) / rawData.length;
     }
 
+    public boolean validateOne(int index) {
+        OneDMatrix vector = new OneDMatrix(rawData[index]);
+        if (out(vector, w) != rawData[index][rawData[0].length-1]) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean testValidateOne(int index) {
+        OneDMatrix vector = new OneDMatrix(testData[index]);
+        if (out(vector, w) != testData[index][testData[0].length-1]) {
+            return false;
+        }
+        return true;
+    }
+
+    public double[] getTestDatum(int index) {
+        return testData[index];
+    }
+
+    public int rawSize() {
+        return rawData.length;
+    }
+
+    public int testSize() {
+        return testData.length;
+    }
+
     public double testValidate() {
         if (!test) {
             return -1;
@@ -181,7 +231,9 @@ public class PerceptronAlgorithm {
                 count++;
             }
         }
-        log("===== Testing Finished =====");
+        if (enableLog) {
+            log("===== " + name + " End Testing=====");
+        }
         return (testData.length - count) / testData.length;
     }
 

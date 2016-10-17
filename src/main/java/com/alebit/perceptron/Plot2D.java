@@ -16,6 +16,7 @@ public class Plot2D {
     protected JFrame frame;
     protected ArrayList<Color> colors = new ArrayList<>(Arrays.asList(Color.RED, Color.BLUE, Color.BLACK, Color.GREEN, Color.CYAN));
     private Plot2DCanvas plot2DCanvas = new Plot2DCanvas();
+    protected int lineCount = 0;
 
     public Plot2D(JPanel graphPanel, JFrame frame) {
         this.graphPanel = graphPanel;
@@ -65,22 +66,39 @@ public class Plot2D {
         }
         double maxX_Y = perceptron.getY(maxX);
         double maxY_X = perceptron.getX(maxY);
-        if (maxX_Y > maxY && maxX_Y - maxY < maxY_X - maxX) {
+        if (Double.isInfinite(maxX_Y) || Double.isNaN(maxX_Y)) {
+            lineDots[1][0] = maxY_X;
+            lineDots[1][1] = maxY;
+        } else if (Double.isInfinite(maxY_X) || Double.isNaN(maxY_X)) {
             lineDots[1][0] = maxX;
             lineDots[1][1] = maxX_Y;
         } else {
-            lineDots[1][0] = maxY_X;
-            lineDots[1][1] = maxY;
+            if (maxX_Y > maxY && Math.abs(maxX_Y - maxY) < Math.abs(maxY_X - maxX)) {
+                lineDots[1][0] = maxX;
+                lineDots[1][1] = maxX_Y;
+            } else {
+                lineDots[1][0] = maxY_X;
+                lineDots[1][1] = maxY;
+            }
         }
         double minX_Y = perceptron.getY(minX);
         double minY_X = perceptron.getX(minY);
-        if (minX_Y < minY && minX_Y - minY > minY_X - minY) {
+        if (Double.isInfinite(minX_Y) || Double.isNaN(minX_Y)) {
+            lineDots[0][0] = minY_X;
+            lineDots[0][1] = minY;
+        } else if (Double.isInfinite(minY_X) || Double.isNaN(minY_X)) {
             lineDots[0][0] = minX;
             lineDots[0][1] = minX_Y;
         } else {
-            lineDots[0][0] = minY_X;
-            lineDots[0][1] = minY;
+            if (minX_Y < minY && Math.abs(minX_Y - minY) < Math.abs(minY_X - minY)) {
+                lineDots[0][0] = minX;
+                lineDots[0][1] = minX_Y;
+            } else {
+                lineDots[0][0] = minY_X;
+                lineDots[0][1] = minY;
+            }
         }
-        plot2DCanvas.addLinePlot("w", colors.get(0), lineDots);
+        plot2DCanvas.addLinePlot("w", colors.get(lineCount % colors.size()), lineDots);
+        lineCount++;
     }
 }
