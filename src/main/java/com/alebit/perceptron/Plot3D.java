@@ -1,6 +1,5 @@
 package com.alebit.perceptron;
 
-import org.math.plot.Plot3DPanel;
 import org.math.plot.canvas.Plot3DCanvas;
 
 import javax.swing.*;

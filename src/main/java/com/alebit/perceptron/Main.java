@@ -3,7 +3,6 @@ package com.alebit.perceptron;
 import com.seaglasslookandfeel.SeaGlassLookAndFeel;
 
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * Created by Alec on 2016/10/9.

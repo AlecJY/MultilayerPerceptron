@@ -1,7 +1,5 @@
 package com.alebit.perceptron;
 
-import com.sun.org.apache.regexp.internal.RE;
-
 import java.util.Random;
 
 /**

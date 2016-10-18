@@ -7,8 +7,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 /**
  * Created by Alec on 2016/10/16.

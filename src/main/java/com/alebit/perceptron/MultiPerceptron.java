@@ -124,11 +124,11 @@ public class MultiPerceptron {
     }
 
     public double testValidate() {
-        if (enableLog) {
-            log("=====  Start Testing=====");
-        }
         if (!test) {
             return -1;
+        }
+        if (enableLog) {
+            log("=====  Start Testing=====");
         }
         int count = 0;
         for (int i = 0; i < perceptrons[0].testSize(); i++) {
@@ -136,7 +136,7 @@ public class MultiPerceptron {
             StringBuffer msg = new StringBuffer();
             if (enableLog) {
                 double[] datum = perceptrons[0].getTestDatum(i);
-                msg.append("dots: (" + String.format("%.3f", datum[0]));
+                msg.append("dot: (" + String.format("%.3f", datum[0]));
                 for (int j = 1; j < datum.length-1; j++) {
                     msg.append(", " + String.format("%.3f", datum[1]));
                 }
