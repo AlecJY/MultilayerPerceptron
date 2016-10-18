@@ -107,10 +107,10 @@ public class ResultForm {
         resultPanel.setLayout(new GridLayoutManager(3, 2, new Insets(20, 20, 20, 20), -1, -1));
         tabbedPane.addTab("   Result   ", resultPanel);
         final JLabel label1 = new JLabel();
-        label1.setText("Traning Recognization Rate");
+        label1.setText("Training Recognition Rate");
         resultPanel.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         testLabel = new JLabel();
-        testLabel.setText("Test Recognization Rate");
+        testLabel.setText("Test Recognition Rate");
         resultPanel.add(testLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("Weights");
