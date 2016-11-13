@@ -28,7 +28,7 @@
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Traning Recognization Rate"/>
+                  <text value="Training Recognition Rate"/>
                 </properties>
               </component>
               <component id="355e4" class="javax.swing.JLabel" binding="testLabel">
@@ -36,7 +36,7 @@
                   <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Test Recognization Rate"/>
+                  <text value="Test Recognition Rate"/>
                 </properties>
               </component>
               <component id="addf7" class="javax.swing.JLabel">
