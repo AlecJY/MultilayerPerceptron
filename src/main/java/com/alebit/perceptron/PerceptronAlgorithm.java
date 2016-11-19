@@ -1,5 +1,7 @@
 package com.alebit.perceptron;
 
+import com.alebit.perceptron.mlp.InputLayer;
+
 import java.util.Random;
 
 /**
@@ -59,7 +61,6 @@ public class PerceptronAlgorithm {
                     }
                 }
             }
-            rawData = learningData;
         }
 
         classification[0] = rawData[0][rawData[0].length-1];
@@ -81,12 +82,8 @@ public class PerceptronAlgorithm {
     }
 
     public double[] calculate() {
-        OneDMatrix w = new OneDMatrix(rawData[0].length - 1);
-        for (int i = 0; i < w.size(); i++) {
-            w.set(i, 1);
-        }
-        w = training(w);
-        this.w = w;
+        InputLayer inputLayer = new InputLayer(learningData);
+
         if (enableLog) {
             log("====== " + name + " End Training =====");
         }
