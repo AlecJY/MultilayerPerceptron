@@ -1,6 +1,8 @@
 package com.alebit.perceptron;
 
+import com.alebit.perceptron.mlp.HiddenLayer;
 import com.alebit.perceptron.mlp.InputLayer;
+import com.alebit.perceptron.mlp.OutputLayer;
 
 import java.util.Random;
 
@@ -81,8 +83,26 @@ public class PerceptronAlgorithm {
         }
     }
 
-    public double[] calculate() {
+    public double[] calculate(int hidLayer, int hidUnit, int outUnit) {
         InputLayer inputLayer = new InputLayer(learningData);
+        OutputLayer outputLayer = new OutputLayer(outUnit, hidUnit);
+        HiddenLayer[] hiddenLayers = new HiddenLayer[hidLayer];
+        if (hiddenLayers.length > 1) {
+            hiddenLayers[hiddenLayers.length - 1] = new HiddenLayer(hidUnit, hidUnit, outputLayer);
+            outputLayer.setParentHiddenLayer(hiddenLayers[hiddenLayers.length - 1]);
+            for (int i = hiddenLayers.length - 2; i > 0; i++) {
+                hiddenLayers[i] = new HiddenLayer(hidUnit, hidUnit, hiddenLayers[i + 1]);
+                hiddenLayers[i + 1].setParentHiddenLayer(hiddenLayers[i]);
+            }
+            hiddenLayers[0] = new HiddenLayer(hidUnit, learningData[0].length, hiddenLayers[1]);
+            hiddenLayers[1].setParentHiddenLayer(hiddenLayers[0]);
+        } else {
+            hiddenLayers[0] = new HiddenLayer(hidUnit, learningData[0].length, outputLayer);
+            outputLayer.setParentHiddenLayer(hiddenLayers[0]);
+        }
+        hiddenLayers[0].setParentHiddenLayer(null);
+        hiddenLayers[0].setThreshold((classification[0] + classification[1]) / 2);
+        inputLayer.learning(hiddenLayers[0]);
 
         if (enableLog) {
             log("====== " + name + " End Training =====");

@@ -12,9 +12,11 @@ public class InputLayer {
 
     public void learning(HiddenLayer hiddenLayer) {
         for (double[] trainingDatum: trainingData) {
+            hiddenLayer.setExpOut(trainingDatum[trainingDatum.length - 1]);
             for (HiddenLayer.Neuron neuron: hiddenLayer.getNeurons()) {
                 neuron.training(trainingDatum);
             }
+            hiddenLayer.nextHiddenLayer();
         }
     }
 }

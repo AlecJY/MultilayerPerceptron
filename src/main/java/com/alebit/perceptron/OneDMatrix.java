@@ -43,6 +43,14 @@ public class OneDMatrix {
         return result;
     }
 
+    public OneDMatrix multiply(double num) {
+        OneDMatrix result = new OneDMatrix(size());
+        for (int i = 0; i < size(); i++) {
+            result.set(i, get(i)*num);
+        }
+        return result;
+    }
+
     public OneDMatrix add(OneDMatrix matrix) {
         if (size() != matrix.size()) {
             throw new NumberFormatException();

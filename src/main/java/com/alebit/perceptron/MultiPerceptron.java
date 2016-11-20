@@ -85,7 +85,7 @@ public class MultiPerceptron {
     public double[][] calculate() {
         double[][] ws = new double[perceptrons.length][];
         for (int i = 0; i < perceptrons.length; i++) {
-            ws[i] = perceptrons[i].calculate();
+            // ws[i] = perceptrons[i].calculate();
         }
         return ws;
     }
