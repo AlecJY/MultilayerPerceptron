@@ -20,6 +20,19 @@ public class OutputLayer extends HiddenLayer {
         backPropagation();
     }
 
+    public void testNextHiddenLayer() {
+        ys = new double[neurons.length + 1];
+        ys[ys.length - 1] = expOut;
+
+        for (int i = 0; i < neurons.length; i++) {
+            ys[i] = neurons[i].getY();
+        }
+    }
+
+    public boolean isOutputLayer() {
+        return true;
+    }
+
     public class Neuron extends HiddenLayer.Neuron {
         public Neuron(int dim) {
             super(dim);
@@ -27,6 +40,8 @@ public class OutputLayer extends HiddenLayer {
 
         public void getDelta(int index) {
             delta = (expOut - y) * y * (1 - y);
+            // System.out.println(y + "," + expOut + ", " + delta);
+            setPy();
         }
     }
 }

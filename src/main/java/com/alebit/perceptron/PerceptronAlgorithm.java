@@ -4,6 +4,8 @@ import com.alebit.perceptron.mlp.HiddenLayer;
 import com.alebit.perceptron.mlp.InputLayer;
 import com.alebit.perceptron.mlp.OutputLayer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -37,6 +39,7 @@ public class PerceptronAlgorithm {
     }
 
     public void initialize() {
+        classifyData();
         if (test) {
             int num = rawData.length;
             int learningNum = (int) Math.ceil((double) num * 2 / 3);
@@ -85,6 +88,18 @@ public class PerceptronAlgorithm {
         }
     }
 
+    private void classifyData() {
+        HashMap<Double, Integer> classMap = new HashMap<>();
+        for (double[] rawDatum: rawData) {
+            if (!classMap.containsKey(rawDatum[rawDatum.length - 1])) {
+                classMap.put(rawDatum[rawDatum.length - 1], classMap.size());
+            }
+        }
+        for (int i = 0; i < rawData.length; i++) {
+            rawData[i][rawData[i].length - 1] = classMap.get(rawData[i][rawData[i].length - 1]);
+        }
+    }
+
     public void calculate(int hidLayer, int hidUnit, int outUnit) {
         InputLayer inputLayer = new InputLayer(learningData);
         OutputLayer outputLayer = new OutputLayer(outUnit, hidUnit);
@@ -92,7 +107,7 @@ public class PerceptronAlgorithm {
         if (hiddenLayers.length > 1) {
             hiddenLayers[hiddenLayers.length - 1] = new HiddenLayer(hidUnit, hidUnit, outputLayer);
             outputLayer.setParentHiddenLayer(hiddenLayers[hiddenLayers.length - 1]);
-            for (int i = hiddenLayers.length - 2; i > 0; i++) {
+            for (int i = hiddenLayers.length - 2; i > 0; i--) {
                 hiddenLayers[i] = new HiddenLayer(hidUnit, hidUnit, hiddenLayers[i + 1]);
                 hiddenLayers[i + 1].setParentHiddenLayer(hiddenLayers[i]);
             }
@@ -105,8 +120,29 @@ public class PerceptronAlgorithm {
         hiddenLayers[0].setParentHiddenLayer(null);
         hiddenLayers[0].setLearningRate(learningRate);
 
+        OneDMatrix w1 = new OneDMatrix(3);
+        w1.set(2, -1.2);
+        w1.set(0, 1);
+        w1.set(1, 1);
+        hiddenLayers[0].getNeurons()[0].setW(w1);
+        OneDMatrix w2 = new OneDMatrix(3);
+        w2.set(2, 0.3);
+        w2.set(0, 1);
+        w2.set(1, 1);
+        hiddenLayers[0].getNeurons()[1].setW(w2);
+        OneDMatrix w3 = new OneDMatrix(3);
+        w3.set(2, 0.5);
+        w3.set(0, 0.4);
+        w3.set(1, 0.8);
+        outputLayer.getNeurons()[0].setW(w3);
+
+
         for (; iterateTimes > 0; iterateTimes--) {
             inputLayer.learning(hiddenLayers[0]);
+            if (inputLayer.testSuccessful(hiddenLayers[0], outputLayer, (classification[0] + classification[1]) / 2)) {
+                System.out.println("Training successful!");
+                break;
+            }
         }
 
         if (enableLog) {
