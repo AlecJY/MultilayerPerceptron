@@ -8,11 +8,11 @@ import java.util.Random;
  * Created by Alec on 2016/11/19.
  */
 public class HiddenLayer {
-    public Neuron[] neurons;
+    protected Neuron[] neurons;
     protected HiddenLayer childHiddenLayer;
     protected HiddenLayer parentHiddenLayer;
     protected double expOut;
-    protected double threshold;
+    protected double learningRate;
     protected double[] ys;
 
     public HiddenLayer(int unitNum, int dim, HiddenLayer childHiddenLayerLayer) {
@@ -37,13 +37,14 @@ public class HiddenLayer {
 
     public void nextHiddenLayer() {
         double[][] ysi = new double[1][];
+        ys = new double[neurons.length + 1];
         ys[ys.length - 1] = expOut;
 
         for (int i = 0; i < neurons.length; i++) {
             ys[i] = neurons[i].getY();
         }
         ysi[0] = ys;
-        childHiddenLayer.setThreshold(threshold);
+        childHiddenLayer.setLearningRate(learningRate);
         InputLayer inputLayer = new InputLayer(ysi);
         inputLayer.learning(childHiddenLayer);
     }
@@ -64,8 +65,8 @@ public class HiddenLayer {
         this.expOut = expOut;
     }
 
-    public void setThreshold(double threshold) {
-        this.threshold = threshold;
+    public void setLearningRate(double learningRate) {
+        this.learningRate = learningRate;
     }
 
     public class Neuron {
@@ -80,6 +81,10 @@ public class HiddenLayer {
             }
         }
 
+        public void setW(OneDMatrix w) {
+            this.w = w;
+        }
+
         public void training(double[] trainingData) {
             double expt = w.get(w.size() - 1) * -1;
             for (int i = 0; i < w.size() - 1; i++) {
@@ -90,9 +95,9 @@ public class HiddenLayer {
 
         public void getDelta(int index) {
             delta = y * (1 - y);
-            int sum = 0;
+            double sum = 0;
             for (int i = 0; i < childHiddenLayer.neurons.length; i++) {
-               sum += childHiddenLayer.neurons[i].delta * childHiddenLayer.neurons[i].w.get(index);
+                sum += childHiddenLayer.neurons[i].delta * childHiddenLayer.neurons[i].w.get(index);
             }
             delta *= sum;
         }
@@ -111,7 +116,7 @@ public class HiddenLayer {
                 }
             }
             py.set(py.size() - 1, -1);
-            w = w.add(py.multiply(threshold*delta));
+            w = w.add(py.multiply(learningRate *delta));
         }
 
         public double getY() {

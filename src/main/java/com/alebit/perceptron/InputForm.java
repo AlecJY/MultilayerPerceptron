@@ -23,9 +23,9 @@ public class InputForm extends JFrame {
     private JSpinner learningSpinner;
     private JCheckBox testCheckBox;
     private JCheckBox detailsCheckBox;
-    private JSpinner spinner1;
-    private JSpinner spinner2;
-    private JSpinner spinner3;
+    private JSpinner hidLayerSpinner;
+    private JSpinner hidUnitSpinner;
+    private JSpinner outUnitSpinner;
 
     private JFrame frame = this;
 
@@ -54,17 +54,17 @@ public class InputForm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     double[][] num = InputFileParser.parse(pathField.getText());
-                    MultiPerceptron perceptron = new MultiPerceptron(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue(), testCheckBox.isSelected(), !detailsCheckBox.isSelected());
+                    PerceptronAlgorithm perceptron = new PerceptronAlgorithm(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue(), "Perceptron", testCheckBox.isSelected(), !detailsCheckBox.isSelected(), System.currentTimeMillis());
                     perceptron.initialize();
-                    double[][] w = perceptron.calculate();
+                    perceptron.calculate((int) hidLayerSpinner.getValue(), (int) hidUnitSpinner.getValue(), (int) outUnitSpinner.getValue());
                     ResultForm resultForm = new ResultForm(frame);
-                    resultForm.setFieldValue(perceptron.getThreshold(), w, perceptron.validate(), perceptron.testValidate());
+                    resultForm.setFieldValue(null, null, perceptron.validate(), perceptron.testValidate());
                     resultForm.getLogArea().setText(perceptron.getLog());
                     resultPanel.removeAll();
                     resultPanel.setLayout(new GridLayout());
                     PlotPainter plotPainter = new PlotPainter(resultForm.getGraphPanel(), frame);
                     plotPainter.setRawData(num);
-                    plotPainter.setPerceptron(perceptron.getPerceptrons());
+                    // plotPainter.setPerceptron(perceptron.getPerceptrons());
                     if (!plotPainter.paint()) {
                         resultForm.getTabbedPane().setEnabledAt(2, false);
                     }

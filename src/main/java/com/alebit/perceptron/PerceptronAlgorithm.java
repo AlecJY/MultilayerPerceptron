@@ -63,6 +63,8 @@ public class PerceptronAlgorithm {
                     }
                 }
             }
+        } else {
+            learningData = rawData;
         }
 
         classification[0] = rawData[0][rawData[0].length-1];
@@ -83,7 +85,7 @@ public class PerceptronAlgorithm {
         }
     }
 
-    public double[] calculate(int hidLayer, int hidUnit, int outUnit) {
+    public void calculate(int hidLayer, int hidUnit, int outUnit) {
         InputLayer inputLayer = new InputLayer(learningData);
         OutputLayer outputLayer = new OutputLayer(outUnit, hidUnit);
         HiddenLayer[] hiddenLayers = new HiddenLayer[hidLayer];
@@ -101,67 +103,14 @@ public class PerceptronAlgorithm {
             outputLayer.setParentHiddenLayer(hiddenLayers[0]);
         }
         hiddenLayers[0].setParentHiddenLayer(null);
-        hiddenLayers[0].setThreshold((classification[0] + classification[1]) / 2);
-        inputLayer.learning(hiddenLayers[0]);
+        hiddenLayers[0].setLearningRate(learningRate);
+
+        for (; iterateTimes > 0; iterateTimes--) {
+            inputLayer.learning(hiddenLayers[0]);
+        }
 
         if (enableLog) {
             log("====== " + name + " End Training =====");
-        }
-        return w.toArray();
-    }
-
-    private OneDMatrix training(OneDMatrix w) {
-        for (int i = 0; i < iterateTimes; i++) {
-            if (enableLog) {
-                log("===== " + (i + 1) + "th Training =====");
-            }
-            double total = 0;
-            for (double[] data : rawData) {
-                OneDMatrix vector = new OneDMatrix(data);
-                double e = data[data.length - 1] - out(vector, w);
-
-                // log
-                if (enableLog) {
-                    StringBuffer msg = new StringBuffer();
-                    msg.append("dot: (" + String.format("%.3f", data[0]));
-                    for (int j = 1; j < data.length - 1; j++) {
-                        msg.append(", " + String.format("%.3f", data[j]));
-                    }
-                    msg.append("), w: (" + String.format("%.3f", threshold));
-                    for (int j = 0; j < w.size(); j++) {
-                        msg.append( ", " + String.format("%.3f", w.toArray()[j]));
-                    }
-                    msg.append("), predict: " + (long) data[data.length - 1] + ", actual: " + (long) out(vector, w));
-                    if (e == 0) {
-                        msg.append(", status: true");
-                    } else {
-                        msg.append(", status: false");
-                    }
-                    log(msg.toString());
-                }
-
-                total += Math.abs(e);
-                OneDMatrix dw = new OneDMatrix(w.size());
-                threshold += oTh * learningRate * e;
-                for (int j = 0; j < dw.size(); j++) {
-                    dw.set(j, vector.get(j) * learningRate * e);
-                }
-                w = w.add(dw);
-            }
-            if (total == 0) {
-                trainSucceed = true;
-                break;
-            }
-        }
-        return w;
-    }
-
-    private double out(OneDMatrix vector, OneDMatrix w) {
-        double result = vector.multiply(w) + threshold * oTh;
-         if (result >= 0) {
-            return classification[1];
-        } else {
-            return classification[0];
         }
     }
 
@@ -180,29 +129,14 @@ public class PerceptronAlgorithm {
     }
 
     public double validate() {
-        double count = 0;
-        for (double[] data: rawData) {
-            OneDMatrix vector = new OneDMatrix(data);
-            if (out(vector, w) != data[data.length-1]) {
-                count++;
-            }
-        }
-        return (rawData.length - count) / rawData.length;
+        return 0;
     }
 
     public boolean validateOne(int index) {
-        OneDMatrix vector = new OneDMatrix(rawData[index]);
-        if (out(vector, w) != rawData[index][rawData[0].length-1]) {
-            return false;
-        }
         return true;
     }
 
     public boolean testValidateOne(int index) {
-        OneDMatrix vector = new OneDMatrix(testData[index]);
-        if (out(vector, w) != testData[index][testData[0].length-1]) {
-            return false;
-        }
         return true;
     }
 
@@ -226,29 +160,7 @@ public class PerceptronAlgorithm {
             log("===== " + name + " Start Testing=====");
         }
         double count = 0;
-        for (double[] data: testData) {
-            OneDMatrix vector = new OneDMatrix(data);
-            if (enableLog) {
-                StringBuffer msg = new StringBuffer();
-                msg.append("dot: (" + String.format("%.3f", data[0]));
-                for (int j = 1; j < data.length - 1; j++) {
-                    msg.append(", " + String.format("%.3f", data[j]));
-                }
-                msg.append("), predict: " + (long) data[data.length - 1] + ", actual: " + (long) out(vector, w));
-                if (out(vector, w) == data[data.length-1]) {
-                    msg.append(", status: true");
-                } else {
-                    msg.append(", status: false");
-                }
-                log(msg.toString());
-            }
-            if (out(vector, w) != data[data.length-1]) {
-                count++;
-            }
-        }
-        if (enableLog) {
-            log("===== " + name + " End Testing=====");
-        }
+
         return (testData.length - count) / testData.length;
     }
 
