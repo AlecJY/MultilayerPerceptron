@@ -31,7 +31,6 @@ public class PerceptronAlgorithm {
     private HiddenLayer[] hiddenLayers;
     private double maxSuccessRate;
     private ArrayList<double[][]> maxWCollection;
-    private HashMap<Double, Integer> classMap;
 
     public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes, String name, boolean test, boolean enableLog, long seed) {
         this.rawData = rawData;
@@ -44,7 +43,6 @@ public class PerceptronAlgorithm {
     }
 
     public void initialize() {
-        classifyData();
         if (test) {
             int num = rawData.length;
             int learningNum = (int) Math.ceil((double) num * 2 / 3);
@@ -77,25 +75,6 @@ public class PerceptronAlgorithm {
 
         if (enableLog) {
             log("====== " + name + " Start Training =====");
-            double[] classArray = new double[classMap.size()];
-            for (double classification: classMap.keySet()) {
-                classArray[classMap.get(classification)] = classification;
-            }
-            for (int i = 0; i < classArray.length; i++) {
-                log("Classification " + (i + 1) + ": " + (int) classArray[i]);
-            }
-        }
-    }
-
-    private void classifyData() {
-        classMap = new HashMap<>();
-        for (double[] rawDatum: rawData) {
-            if (!classMap.containsKey(rawDatum[rawDatum.length - 1])) {
-                classMap.put(rawDatum[rawDatum.length - 1], classMap.size());
-            }
-        }
-        for (int i = 0; i < rawData.length; i++) {
-            rawData[i][rawData[i].length - 1] = (double) classMap.get(rawData[i][rawData[i].length - 1]) / (classMap.size() - 1);
         }
     }
 
@@ -123,7 +102,7 @@ public class PerceptronAlgorithm {
         maxWCollection = new ArrayList<>();
         for (; iterateTimes > 0; iterateTimes--) {
             inputLayer.learning(hiddenLayers[0]);
-            double successRate = inputLayer.successRate(hiddenLayers[0], outputLayer, classMap);
+            double successRate = inputLayer.successRate(hiddenLayers[0], outputLayer);
             log("Training recognition rate: " + String.format("%.2f", successRate * 100));
             if (maxSuccessRate == -1) {
                 maxSuccessRate = successRate;
@@ -148,6 +127,10 @@ public class PerceptronAlgorithm {
         if (!lastTraining) {
             inputLayer.restoreWCollection(maxWCollection, hiddenLayers[0]);
         }
+    }
+
+    public double[][] getTransData() {
+        return inputLayer.getTransData();
     }
 
     public ArrayList<double[][]> getW() {
@@ -201,7 +184,7 @@ public class PerceptronAlgorithm {
         }
 
         InputLayer testInputLayer = new InputLayer(testData);
-        double testRate =  testInputLayer.successRate(hiddenLayers[0], outputLayer, classMap);
+        double testRate =  testInputLayer.successRate(hiddenLayers[0], outputLayer);
 
         if (enableLog) {
             log("===== " + name + " Finish Testing=====");
@@ -216,5 +199,12 @@ public class PerceptronAlgorithm {
 
     public String getLog() {
         return log.toString();
+    }
+
+    public double[] test(double[] testDatum) {
+        double[] realTestDatum = new double[testDatum.length + 1];
+        System.arraycopy(testDatum, 0, realTestDatum, 0, testDatum.length);
+        realTestDatum[realTestDatum.length - 1] = 0;
+        return inputLayer.test(realTestDatum, hiddenLayers[0], outputLayer);
     }
 }

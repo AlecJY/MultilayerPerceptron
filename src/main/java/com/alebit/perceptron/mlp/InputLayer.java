@@ -2,6 +2,7 @@ package com.alebit.perceptron.mlp;
 
 import com.alebit.perceptron.OneDMatrix;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,6 +11,7 @@ import java.util.HashMap;
  */
 public class InputLayer {
     private double[][] trainingData;
+    private double[][] transData;
 
     public InputLayer(double[][] trainingData) {
         this.trainingData = trainingData;
@@ -35,22 +37,33 @@ public class InputLayer {
         }
     }
 
-    public double successRate(HiddenLayer hiddenLayer, OutputLayer outputLayer, HashMap<Double,Integer> classMap) {
+    public double successRate(HiddenLayer hiddenLayer, OutputLayer outputLayer) {
         int error = 0;
-        for (double[] trainingDatum: trainingData) {
-            hiddenLayer.setExpOut(trainingDatum[trainingDatum.length - 1]);
+        transData = new double[trainingData.length][];
+        for (int j = 0; j < trainingData.length; j++) {
+            hiddenLayer.setExpOut(trainingData[j][trainingData[j].length - 1]);
             for (HiddenLayer.Neuron neuron: hiddenLayer.getNeurons()) {
-                neuron.training(trainingDatum);
+                neuron.training(trainingData[j]);
             }
             hiddenLayer.testNextHiddenLayer();
-            double orgClass = Math.round(outputLayer.getYs()[outputLayer.getYs().length - 1] * (classMap.size() - 1));
-            for (int i = 0; i < outputLayer.getYs().length - 1; i++) {
-                if (outputLayer.getYs()[i] < orgClass / classMap.size() || outputLayer.getYs()[i] >= (orgClass + 1) /classMap.size()) {
-                    error++;
+            boolean isError = false;
+            for (int i = 0; i < outputLayer.getNeurons().length; i++) {
+                OutputLayer.Neuron neuron = (OutputLayer.Neuron) outputLayer.getNeurons()[i];
+                if ((neuron.y - 0.5) * (neuron.expOut(i) - 0.5) < 0) {
+                    isError = true;
+                    break;
                 }
             }
+            if (isError) {
+                error++;
+            }
+            transData[j] = outputLayer.getNeurons()[0].trainingData;
         }
         return (double) (trainingData.length - error) / trainingData.length;
+    }
+
+    public double[][] getTransData() {
+        return transData;
     }
 
     public ArrayList<double[][]> getWCollection(HiddenLayer hiddenLayer) {
@@ -72,7 +85,22 @@ public class InputLayer {
             for (int j = 0; j < hiddenLayer.getNeurons().length; j++) {
                 hiddenLayer.getNeurons()[j].setW(wCollection.get(i)[j]);
             }
-            hiddenLayer = hiddenLayer.childHiddenLayer;
+            if (hiddenLayer.childHiddenLayer != null) {
+                hiddenLayer = hiddenLayer.childHiddenLayer;
+            }
         }
+        successRate(firstHiddenLayer, (OutputLayer) hiddenLayer);
+    }
+
+    public double[] test(double[] testDatum, HiddenLayer hiddenLayer, OutputLayer outputLayer) {
+        for (HiddenLayer.Neuron neuron: hiddenLayer.getNeurons()) {
+            neuron.training(testDatum);
+        }
+        hiddenLayer.testNextHiddenLayer();
+        double[] ys = new double[outputLayer.getNeurons().length];
+        for (int i = 0; i < outputLayer.getNeurons().length; i++) {
+            ys[i] = outputLayer.getNeurons()[i].y;
+        }
+        return ys;
     }
 }

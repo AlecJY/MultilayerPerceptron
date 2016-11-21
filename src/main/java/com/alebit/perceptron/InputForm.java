@@ -59,17 +59,10 @@ public class InputForm extends JFrame {
                     PerceptronAlgorithm perceptron = new PerceptronAlgorithm(num, (double) learningSpinner.getValue(), (int) iterateSpinner.getValue(), "Perceptron", testCheckBox.isSelected(), !detailsCheckBox.isSelected(), System.currentTimeMillis());
                     perceptron.initialize();
                     perceptron.calculate((int) hidLayerSpinner.getValue(), (int) hidUnitSpinner.getValue(), (int) outUnitSpinner.getValue());
-                    ResultForm resultForm = new ResultForm(frame);
-                    resultForm.setFieldValue(perceptron.getW(), perceptron.validate(), perceptron.testValidate());
+                    ResultForm resultForm = new ResultForm(frame, perceptron);
                     resultForm.getLogArea().setText(perceptron.getLog());
                     resultPanel.removeAll();
                     resultPanel.setLayout(new GridLayout());
-                    /* PlotPainter plotPainter = new PlotPainter(resultForm.getGraphPanel(), frame);
-                    plotPainter.setRawData(num);
-                    // plotPainter.setPerceptron(perceptron.getPerceptrons());
-                    if (!plotPainter.paint()) {
-                        resultForm.getTabbedPane().setEnabledAt(2, false);
-                    } */
                     if (detailsCheckBox.isSelected()) {
                         resultForm.getTabbedPane().setEnabledAt(1, false);
                     }
@@ -91,11 +84,10 @@ public class InputForm extends JFrame {
         resultPanel = new JPanel();
         hidLayerSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         hidUnitSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
-        outUnitSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        outUnitSpinner = new JSpinner(new SpinnerNumberModel(10, 1, Integer.MAX_VALUE, 1));
     }
 
     private class RevalidateForm implements Runnable {
-
         @Override
         public void run() {
             try {

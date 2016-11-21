@@ -39,9 +39,16 @@ public class OutputLayer extends HiddenLayer {
         }
 
         public void getDelta(int index) {
-            delta = (expOut - y) * y * (1 - y);
-            // System.out.println(y + "," + expOut + ", " + delta);
+            delta = (expOut(index) - y) * y * (1 - y);
             setPy();
+        }
+
+        public double expOut(int index) {
+            if (index == expOut) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
     }
 }
