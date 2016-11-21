@@ -26,6 +26,7 @@ public class InputForm extends JFrame {
     private JSpinner hidLayerSpinner;
     private JSpinner hidUnitSpinner;
     private JSpinner outUnitSpinner;
+    private JPanel outPanel;
 
     private JFrame frame = this;
 
@@ -36,6 +37,7 @@ public class InputForm extends JFrame {
         setLayout(new BorderLayout());
         getRootPane().setDefaultButton(calculateButton);
         add(mainPanel);
+        outPanel.setVisible(false);
         pack();
 
 
@@ -58,16 +60,16 @@ public class InputForm extends JFrame {
                     perceptron.initialize();
                     perceptron.calculate((int) hidLayerSpinner.getValue(), (int) hidUnitSpinner.getValue(), (int) outUnitSpinner.getValue());
                     ResultForm resultForm = new ResultForm(frame);
-                    resultForm.setFieldValue(null, null, perceptron.validate(), perceptron.testValidate());
+                    resultForm.setFieldValue(perceptron.getW(), perceptron.validate(), perceptron.testValidate());
                     resultForm.getLogArea().setText(perceptron.getLog());
                     resultPanel.removeAll();
                     resultPanel.setLayout(new GridLayout());
-                    PlotPainter plotPainter = new PlotPainter(resultForm.getGraphPanel(), frame);
+                    /* PlotPainter plotPainter = new PlotPainter(resultForm.getGraphPanel(), frame);
                     plotPainter.setRawData(num);
                     // plotPainter.setPerceptron(perceptron.getPerceptrons());
                     if (!plotPainter.paint()) {
                         resultForm.getTabbedPane().setEnabledAt(2, false);
-                    }
+                    } */
                     if (detailsCheckBox.isSelected()) {
                         resultForm.getTabbedPane().setEnabledAt(1, false);
                     }
@@ -87,6 +89,9 @@ public class InputForm extends JFrame {
         learningSpinner = new JSpinner(new SpinnerNumberModel(0, -1, 1, 0.01));
         iterateSpinner = new JSpinner();
         resultPanel = new JPanel();
+        hidLayerSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        hidUnitSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        outUnitSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
     }
 
     private class RevalidateForm implements Runnable {

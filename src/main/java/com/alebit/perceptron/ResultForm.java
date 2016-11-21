@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Created by Alec on 2016/10/16.
@@ -57,19 +58,29 @@ public class ResultForm {
         return logArea;
     }
 
-    public void setFieldValue(double[] threshold, double[][] w, double tRate, double testRate) {
+    public void setFieldValue(ArrayList<double[][]> w, double tRate, double testRate) {
         String weightsStr = "<html>";
         String[] colors = new String[]{"red", "blue", "black", "green", "cyan"};
-        for (int i = 0; i < threshold.length; i++) {
-            weightsStr = weightsStr.concat("<font color=\"" + colors[i % colors.length] + "\">(" + String.format("%.3f", threshold[i]));
-            for (double wValue : w[i]) {
-                weightsStr = weightsStr.concat(", " + String.format("%.3f", wValue));
+        for (int i = 0; i < w.size() - 1; i++) {
+            weightsStr = weightsStr.concat("<font color=\"" + colors[i % colors.length] + "\">" + "&lt;HiddenLayer " + (i + 1) + "&gt;");
+            for (double[] wn: w.get(i)) {
+                weightsStr = weightsStr.concat("<br/>(" + wn[wn.length - 1] );
+                for (int j = 0; j < wn.length - 1; j++) {
+                    weightsStr = weightsStr.concat(", " + wn[j]);
+                }
+                weightsStr = weightsStr.concat(")");
+            }
+            weightsStr = weightsStr.concat("</font><br/>");
+        }
+        weightsStr = weightsStr.concat("<font color=\"" + colors[w.size() - 1 % colors.length] + "\">" + "&lt;OutputLayer&gt;");
+        for (double[] wn: w.get(w.size() - 1)) {
+            weightsStr = weightsStr.concat("<br/>(" + wn[wn.length - 1] );
+            for (int j = 0; j < wn.length - 1; j++) {
+                weightsStr = weightsStr.concat(", " + wn[j]);
             }
             weightsStr = weightsStr.concat(")</font>");
-            if (i != threshold.length - 1) {
-                weightsStr = weightsStr.concat("<br/>");
-            }
         }
+
         weightsStr = weightsStr.concat("</html>");
         weightsPane.setEditable(false);
         weightsPane.setContentType("text/html");

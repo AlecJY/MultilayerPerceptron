@@ -101,12 +101,28 @@ public class HiddenLayer {
             w = new OneDMatrix(dim);
             Random random = new Random();
             for (int i = 0; i < w.size(); i++) {
-                w.set(i ,random.nextDouble() + random.nextInt(11) + 0.00001);
+                double rand = random.nextDouble() + random.nextInt(2) + 0.001;
+                if (random.nextBoolean()) {
+                    rand *= -1;
+                }
+                w.set(i ,rand);
             }
         }
 
         public void setW(OneDMatrix w) {
             this.w = w;
+        }
+
+        public void setW(double[] w) {
+            OneDMatrix wm = new OneDMatrix(w.length);
+            for (int i = 0; i < w.length; i++) {
+                wm.set(i, w[i]);
+            }
+            this.w = wm;
+        }
+
+        public double[] getW() {
+            return w.toArray();
         }
 
         public void training(double[] trainingData) {

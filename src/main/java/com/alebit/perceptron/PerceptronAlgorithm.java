@@ -19,14 +19,19 @@ public class PerceptronAlgorithm {
     private double iterateTimes;
     private double threshold = 1;
     private double oTh = 1;
-    private double[] classification = new double[2];
-    private boolean trainSucceed = false;
+    private boolean lastTraining = false;
     private boolean test;
     private OneDMatrix w;
     private String name;
     private StringBuffer log = new StringBuffer();
     private boolean enableLog = true;
     private long seed;
+    private InputLayer inputLayer;
+    private OutputLayer outputLayer;
+    private HiddenLayer[] hiddenLayers;
+    private double maxSuccessRate;
+    private ArrayList<double[][]> maxWCollection;
+    private HashMap<Double, Integer> classMap;
 
     public PerceptronAlgorithm(double[][] rawData, double learningRate, int iterateTimes, String name, boolean test, boolean enableLog, long seed) {
         this.rawData = rawData;
@@ -70,40 +75,34 @@ public class PerceptronAlgorithm {
             learningData = rawData;
         }
 
-        classification[0] = rawData[0][rawData[0].length-1];
-        for (int i = 0; i < rawData.length; i++) {
-            if (rawData[i][rawData[0].length-1] != classification[0]) {
-                classification[1] = rawData[i][rawData[0].length-1];
-                break;
-            }
-        }
-        if (classification[0] > classification[1]) {
-            double tmp = classification[0];
-            classification[0] = classification[1];
-            classification[1] = tmp;
-        }
         if (enableLog) {
             log("====== " + name + " Start Training =====");
-            log("Classification 1: " + (int) classification[0] + "\t Classification 2: " + (int) classification[1]);
+            double[] classArray = new double[classMap.size()];
+            for (double classification: classMap.keySet()) {
+                classArray[classMap.get(classification)] = classification;
+            }
+            for (int i = 0; i < classArray.length; i++) {
+                log("Classification " + (i + 1) + ": " + (int) classArray[i]);
+            }
         }
     }
 
     private void classifyData() {
-        HashMap<Double, Integer> classMap = new HashMap<>();
+        classMap = new HashMap<>();
         for (double[] rawDatum: rawData) {
             if (!classMap.containsKey(rawDatum[rawDatum.length - 1])) {
                 classMap.put(rawDatum[rawDatum.length - 1], classMap.size());
             }
         }
         for (int i = 0; i < rawData.length; i++) {
-            rawData[i][rawData[i].length - 1] = classMap.get(rawData[i][rawData[i].length - 1]);
+            rawData[i][rawData[i].length - 1] = (double) classMap.get(rawData[i][rawData[i].length - 1]) / (classMap.size() - 1);
         }
     }
 
     public void calculate(int hidLayer, int hidUnit, int outUnit) {
-        InputLayer inputLayer = new InputLayer(learningData);
-        OutputLayer outputLayer = new OutputLayer(outUnit, hidUnit);
-        HiddenLayer[] hiddenLayers = new HiddenLayer[hidLayer];
+        inputLayer = new InputLayer(learningData);
+        outputLayer = new OutputLayer(outUnit, hidUnit);
+        hiddenLayers = new HiddenLayer[hidLayer];
         if (hiddenLayers.length > 1) {
             hiddenLayers[hiddenLayers.length - 1] = new HiddenLayer(hidUnit, hidUnit, outputLayer);
             outputLayer.setParentHiddenLayer(hiddenLayers[hiddenLayers.length - 1]);
@@ -120,27 +119,24 @@ public class PerceptronAlgorithm {
         hiddenLayers[0].setParentHiddenLayer(null);
         hiddenLayers[0].setLearningRate(learningRate);
 
-        OneDMatrix w1 = new OneDMatrix(3);
-        w1.set(2, -1.2);
-        w1.set(0, 1);
-        w1.set(1, 1);
-        hiddenLayers[0].getNeurons()[0].setW(w1);
-        OneDMatrix w2 = new OneDMatrix(3);
-        w2.set(2, 0.3);
-        w2.set(0, 1);
-        w2.set(1, 1);
-        hiddenLayers[0].getNeurons()[1].setW(w2);
-        OneDMatrix w3 = new OneDMatrix(3);
-        w3.set(2, 0.5);
-        w3.set(0, 0.4);
-        w3.set(1, 0.8);
-        outputLayer.getNeurons()[0].setW(w3);
-
-
+        maxSuccessRate = -1;
+        maxWCollection = new ArrayList<>();
         for (; iterateTimes > 0; iterateTimes--) {
             inputLayer.learning(hiddenLayers[0]);
-            if (inputLayer.testSuccessful(hiddenLayers[0], outputLayer, (classification[0] + classification[1]) / 2)) {
-                System.out.println("Training successful!");
+            double successRate = inputLayer.successRate(hiddenLayers[0], outputLayer, classMap);
+            log("Training recognition rate: " + String.format("%.2f", successRate * 100));
+            if (maxSuccessRate == -1) {
+                maxSuccessRate = successRate;
+                maxWCollection = inputLayer.getWCollection(hiddenLayers[0]);
+                lastTraining = true;
+            } else if (successRate > maxSuccessRate) {
+                maxSuccessRate = successRate;
+                maxWCollection = inputLayer.getWCollection(hiddenLayers[0]);
+                lastTraining = true;
+            } else {
+                lastTraining = false;
+            }
+            if (successRate == 1) {
                 break;
             }
         }
@@ -148,6 +144,14 @@ public class PerceptronAlgorithm {
         if (enableLog) {
             log("====== " + name + " End Training =====");
         }
+
+        if (!lastTraining) {
+            inputLayer.restoreWCollection(maxWCollection, hiddenLayers[0]);
+        }
+    }
+
+    public ArrayList<double[][]> getW() {
+        return maxWCollection;
     }
 
     public double getX(double y) {
@@ -165,7 +169,7 @@ public class PerceptronAlgorithm {
     }
 
     public double validate() {
-        return 0;
+        return maxSuccessRate;
     }
 
     public boolean validateOne(int index) {
@@ -195,9 +199,14 @@ public class PerceptronAlgorithm {
         if (enableLog) {
             log("===== " + name + " Start Testing=====");
         }
-        double count = 0;
 
-        return (testData.length - count) / testData.length;
+        InputLayer testInputLayer = new InputLayer(testData);
+        double testRate =  testInputLayer.successRate(hiddenLayers[0], outputLayer, classMap);
+
+        if (enableLog) {
+            log("===== " + name + " Finish Testing=====");
+        }
+        return testRate;
     }
 
     private void log(String msg) {

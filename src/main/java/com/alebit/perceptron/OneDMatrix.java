@@ -28,7 +28,9 @@ public class OneDMatrix {
     }
 
     public double[] toArray() {
-        return matrixData;
+        double[] matrixDataCopy = new double[matrixData.length];
+        System.arraycopy(matrixData, 0, matrixDataCopy, 0, matrixData.length);
+        return matrixDataCopy;
     }
 
     public double multiply(OneDMatrix matrix) {
