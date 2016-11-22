@@ -38,6 +38,7 @@ public class InputForm extends JFrame {
         getRootPane().setDefaultButton(calculateButton);
         add(mainPanel);
         outPanel.setVisible(false);
+        testCheckBox.setVisible(false);
         pack();
 
 
@@ -61,6 +62,7 @@ public class InputForm extends JFrame {
                     perceptron.calculate((int) hidLayerSpinner.getValue(), (int) hidUnitSpinner.getValue(), (int) outUnitSpinner.getValue());
                     ResultForm resultForm = new ResultForm(frame, perceptron);
                     resultForm.getLogArea().setText(perceptron.getLog());
+                    resultForm.setFieldValue(perceptron.validate());
                     resultPanel.removeAll();
                     resultPanel.setLayout(new GridLayout());
                     if (detailsCheckBox.isSelected()) {

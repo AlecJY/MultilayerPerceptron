@@ -21,6 +21,7 @@ public class ResultForm {
     private JTextArea logArea;
     private JButton recognizeButton;
     private JPanel numberButtonPane;
+    private JTextPane tRatePane;
     private JFrame frame;
     private JButton[][] numberButtons = new JButton[5][5];
 
@@ -99,6 +100,10 @@ public class ResultForm {
         });
     }
 
+    public void setFieldValue(double tRate) {
+        tRatePane.setText(String.format("%.2f", tRate * 100) + " %");
+    }
+
     public JPanel getMainPanel() {
         return mainPanel;
     }
@@ -109,10 +114,6 @@ public class ResultForm {
 
     public JTextArea getLogArea() {
         return logArea;
-    }
-
-    public void setFieldValue(ArrayList<double[][]> w, double tRate, double testRate) {
-
     }
 
 }
