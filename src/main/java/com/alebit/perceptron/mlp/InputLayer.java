@@ -10,6 +10,7 @@ import java.util.HashMap;
  */
 public class InputLayer {
     private double[][] trainingData;
+    private double[][] transData;
 
     public InputLayer(double[][] trainingData) {
         this.trainingData = trainingData;
@@ -37,10 +38,11 @@ public class InputLayer {
 
     public double successRate(HiddenLayer hiddenLayer, OutputLayer outputLayer, HashMap<Double,Integer> classMap) {
         int error = 0;
-        for (double[] trainingDatum: trainingData) {
-            hiddenLayer.setExpOut(trainingDatum[trainingDatum.length - 1]);
+        transData = new double[trainingData.length][];
+        for (int j = 0; j < trainingData.length; j++) {
+            hiddenLayer.setExpOut(trainingData[j][trainingData[j].length - 1]);
             for (HiddenLayer.Neuron neuron: hiddenLayer.getNeurons()) {
-                neuron.training(trainingDatum);
+                neuron.training(trainingData[j]);
             }
             hiddenLayer.testNextHiddenLayer();
             double orgClass = Math.round(outputLayer.getYs()[outputLayer.getYs().length - 1] * (classMap.size() - 1));
@@ -49,6 +51,7 @@ public class InputLayer {
                     error++;
                 }
             }
+            transData[j] = outputLayer.getNeurons()[0].trainingData;
         }
         return (double) (trainingData.length - error) / trainingData.length;
     }
@@ -66,13 +69,20 @@ public class InputLayer {
         return wCollection;
     }
 
-    public void restoreWCollection(ArrayList<double[][]> wCollection,HiddenLayer hiddenLayer) {
+    public void restoreWCollection(ArrayList<double[][]> wCollection,HiddenLayer hiddenLayer, HashMap<Double, Integer> classMap) {
         HiddenLayer firstHiddenLayer = hiddenLayer;
         for (int i = 0; i < wCollection.size(); i++) {
             for (int j = 0; j < hiddenLayer.getNeurons().length; j++) {
                 hiddenLayer.getNeurons()[j].setW(wCollection.get(i)[j]);
             }
-            hiddenLayer = hiddenLayer.childHiddenLayer;
+            if (hiddenLayer.childHiddenLayer != null) {
+                hiddenLayer = hiddenLayer.childHiddenLayer;
+            }
         }
+        successRate(firstHiddenLayer, (OutputLayer) hiddenLayer, classMap);
+    }
+
+    public double[][] getTransData() {
+        return transData;
     }
 }

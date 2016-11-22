@@ -64,12 +64,12 @@ public class InputForm extends JFrame {
                     resultForm.getLogArea().setText(perceptron.getLog());
                     resultPanel.removeAll();
                     resultPanel.setLayout(new GridLayout());
-                    /* PlotPainter plotPainter = new PlotPainter(resultForm.getGraphPanel(), frame);
-                    plotPainter.setRawData(num);
-                    // plotPainter.setPerceptron(perceptron.getPerceptrons());
+                    PlotPainter plotPainter = new PlotPainter(resultForm.getGraphPanel(), frame);
+                    plotPainter.setRawData(perceptron.getTransData());
+                    plotPainter.setPerceptron(perceptron);
                     if (!plotPainter.paint()) {
                         resultForm.getTabbedPane().setEnabledAt(2, false);
-                    } */
+                    }
                     if (detailsCheckBox.isSelected()) {
                         resultForm.getTabbedPane().setEnabledAt(1, false);
                     }

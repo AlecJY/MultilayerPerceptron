@@ -63,14 +63,28 @@
                   <editable value="false"/>
                 </properties>
               </component>
-              <component id="adcff" class="javax.swing.JTextPane" binding="weightsPane">
+              <scrollpane id="617c2">
                 <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <minimum-size width="-1" height="150"/>
+                    <preferred-size width="-1" height="150"/>
+                    <maximum-size width="-1" height="150"/>
+                  </grid>
                 </constraints>
                 <properties>
-                  <text value=""/>
+                  <horizontalScrollBarPolicy value="31"/>
+                  <verticalScrollBarPolicy value="22"/>
                 </properties>
-              </component>
+                <border type="none"/>
+                <children>
+                  <component id="adcff" class="javax.swing.JTextPane" binding="weightsPane">
+                    <constraints/>
+                    <properties>
+                      <text value=""/>
+                    </properties>
+                  </component>
+                </children>
+              </scrollpane>
             </children>
           </grid>
           <grid id="a29cf" binding="detailsPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

@@ -146,12 +146,16 @@ public class PerceptronAlgorithm {
         }
 
         if (!lastTraining) {
-            inputLayer.restoreWCollection(maxWCollection, hiddenLayers[0]);
+            inputLayer.restoreWCollection(maxWCollection, hiddenLayers[0], classMap);
         }
     }
 
     public ArrayList<double[][]> getW() {
         return maxWCollection;
+    }
+
+    public double[][] getTransData() {
+        return inputLayer.getTransData();
     }
 
     public double getX(double y) {
