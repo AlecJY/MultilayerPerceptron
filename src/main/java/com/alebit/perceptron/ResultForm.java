@@ -97,7 +97,7 @@ public class ResultForm {
                     msgStr = msgStr.concat("<br/>" + i + ": " + String.format("%.2f", ys[i] * 100) + " %");
                 }
                 msgStr = msgStr.concat("</html>");
-                JOptionPane.showMessageDialog(null, msgStr);
+                JOptionPane.showMessageDialog(frame, msgStr);
             }
         });
     }
