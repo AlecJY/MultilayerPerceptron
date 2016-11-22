@@ -1,7 +1,5 @@
 package com.alebit.perceptron;
 
-import com.seaglasslookandfeel.SeaGlassLookAndFeel;
-
 import javax.swing.*;
 
 /**
